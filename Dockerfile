@@ -32,4 +32,4 @@ COPY . .
 # Este es el comando que se ejecutará cuando Render inicie nuestro contenedor.
 # Usamos la misma sintaxis que antes para que escuche en el puerto correcto.
 # Nota: No usamos 'gunicorn' directamente, sino una forma que permite a Docker pasarle variables.
-CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "app:app"]
+CMD gunicorn --bind 0.0.0.0:$PORT app:app
