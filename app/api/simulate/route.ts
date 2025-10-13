@@ -1,12 +1,6 @@
 import { NextResponse } from 'next/server';
 
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: '10mb', // El límite que necesites
-    },
-  },
-}
+
 
 export async function POST(request: Request) {
   // Cámara de seguridad 1: ¿Entró la petición a nuestra API de Next.js?
