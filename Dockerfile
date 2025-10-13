@@ -1,35 +1,41 @@
-# --- PASO 1: El Plano Base ---
-# Empezamos con una imagen oficial de Python 3.11 sobre Debian (Linux).
-# Esta imagen ya tiene Python y pip instalados.
-FROM python:3.11-slim
+# PASO 1: IMAGEN BASE
+# Empezamos con una imagen oficial de Python 3.11, versión "slim" (ligera).
+# Esta imagen está basada en Linux (Debian).
+FROM python:3.11
 
-# --- PASO 2: Instalar las Herramientas del Sistema ---
-# Le decimos al sistema operativo (Debian) que instale las herramientas de construcción que necesitamos.
-# 'apt-get' es el 'pip' para el sistema operativo.
-# 'RUN' ejecuta un comando durante la construcción de la imagen.
+# PASO 2: INSTALAR DEPENDENCIAS DEL SISTEMA OPERATIVO
+# Este es el paso más crucial. Instalamos todas las herramientas que FMPy necesitará
+# para compilar el FMU de código fuente dentro del servidor.
+# - build-essential: Instala el compilador de C/C++ (gcc, g++).
+# - cmake: El sistema de construcción que FMPy usa para orquestar la compilación.
+# - python3-dev: Los "headers" de desarrollo de Python, necesarios para que gcc pueda crear extensiones de Python.
+# - unzip: Utilidad para descomprimir archivos, usada por FMPy bajo el capó.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     cmake \
+    python3-dev \
+    unzip \
     && rm -rf /var/lib/apt/lists/*
 
-# --- PASO 3: Preparar el Espacio de Trabajo ---
-# Creamos una carpeta dentro de nuestro contenedor para poner el código.
+# PASO 3: CONFIGURAR EL DIRECTORIO DE TRABAJO
+# Creamos una carpeta /app dentro del contenedor y la establecemos como nuestro directorio de trabajo.
 WORKDIR /app
 
-# --- PASO 4: Copiar la "Lista de la Compra" ---
-# Copiamos solo el archivo requirements.txt primero. Esto es una optimización de caché.
+# PASO 4: INSTALAR DEPENDENCIAS DE PYTHON (Optimizado para caché)
+# Copiamos solo el archivo de requerimientos primero. Si este archivo no cambia en futuros
+# despliegues, Docker reutilizará la capa cacheada de este paso, haciendo el build mucho más rápido.
 COPY requirements.txt .
-
-# --- PASO 5: Instalar las Dependencias de Python ---
-# Ejecutamos pip para instalar todo lo de nuestra lista.
 RUN pip install --no-cache-dir -r requirements.txt
 
-# --- PASO 6: Copiar el Resto de Nuestro Código ---
-# Copiamos todo lo demás (app.py, etc.) a la carpeta /app.
+# PASO 5: COPIAR EL CÓDIGO DE LA APLICACIÓN
+# Copiamos el resto de los archivos de nuestro proyecto (app.py, etc.) al directorio de trabajo.
 COPY . .
 
-# --- PASO 7: Las Instrucciones de Arranque ---
-# Este es el comando que se ejecutará cuando Render inicie nuestro contenedor.
-# Usamos la misma sintaxis que antes para que escuche en el puerto correcto.
-# Nota: No usamos 'gunicorn' directamente, sino una forma que permite a Docker pasarle variables.
-CMD gunicorn --bind 0.0.0.0:$PORT app:app
+# PASO 6: COMANDO DE INICIO
+# Este es el comando que Render ejecutará cuando el contenedor se inicie.
+# - Usamos la forma "shell" (sin corchetes) para que la variable de entorno $PORT sea interpretada.
+# - --bind 0.0.0.0:$PORT: Le dice a Gunicorn que escuche en el puerto que Render le asigne.
+# - --timeout 120: Le da al worker hasta 120 segundos para responder, crucial para la lenta
+#   primera compilación del FMU.
+# - app:app: Le dice a Gunicorn que busque en el archivo app.py la variable app.
+CMD gunicorn --bind 0.0.0.0:$PORT --timeout 120 app:app
