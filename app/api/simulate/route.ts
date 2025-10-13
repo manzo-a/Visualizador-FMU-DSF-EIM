@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     if (parameters) {
       pythonFormData.append('parameters', parameters);
     }
-    const pythonBackendUrl = 'http://127.0.0.1:5001/api/simulate';
+    const pythonBackendUrl = '${process.env.BACKEND_URL}/api/simulate';
 
     // Cámara de seguridad 3: Justo antes de intentar hablar con Python.
     console.log(`[Next.js API] -> Reenviando petición a Python en: ${pythonBackendUrl}`);
