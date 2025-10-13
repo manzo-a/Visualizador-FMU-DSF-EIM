@@ -1,0 +1,12 @@
+# Ignorar los mismos archivos que Git
+node_modules
+.next
+.git
+.gitignore
+.vscode
+
+# Ignorar el Dockerfile mismo y los archivos de entorno virtual
+Dockerfile
+.dockerignore
+venv
+__pycache__
