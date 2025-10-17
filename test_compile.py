@@ -48,7 +48,7 @@ try:
     from fmpy.util import compile_platform_binary
     print("La importación de 'compile_platform_binary' fue exitosa después de la verificación.")
     # Procedemos con la compilación real
-    FMU_FILENAME = 'First.fmu'
+    FMU_FILENAME = 'SpringDamperSystem_ME.fmu'
     print(f"Intentando compilar '{FMU_FILENAME}'...")
     compile_platform_binary(FMU_FILENAME)
     print("¡ÉXITO en la compilación!")
