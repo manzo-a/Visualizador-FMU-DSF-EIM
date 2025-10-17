@@ -25,7 +25,7 @@ WORKDIR /app
 # Copiamos solo el archivo de requerimientos primero. Si este archivo no cambia en futuros
 # despliegues, Docker reutilizará la capa cacheada de este paso, haciendo el build mucho más rápido.
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip uninstall -y fmpy && pip install --no-cache-dir -r requirements.txt
 
 # PASO 5: COPIAR EL CÓDIGO DE LA APLICACIÓN
 # Copiamos el resto de los archivos de nuestro proyecto (app.py, etc.) al directorio de trabajo.
