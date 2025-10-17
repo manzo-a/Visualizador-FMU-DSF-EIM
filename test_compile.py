@@ -2,7 +2,7 @@
 import os
 
 # ¡LA IMPORTACIÓN Y EL MÉTODO CORRECTOS PARA VERSIONES MODERNAS!
-from fmpy.fmu import FMU
+from fmpy import FMU
 
 print(f"--- INICIO DE LA PRUEBA FINAL Y MODERNA ---")
 
