@@ -1,7 +1,7 @@
 # test_compile.py
 import os
 import fmpy
-#from fmpy.util import compile_platform_binary
+from fmpy import compile_platform_binary
 
 FMU_FILENAME = 'SpringDamperSystem_ME.fmu'
 
